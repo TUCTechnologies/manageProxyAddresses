@@ -5,7 +5,7 @@ $Users = Get-ADUser -Filter * -SearchBase $ldapString
 
 ForEach($User in $Users) {
     If($User.UserPrincipalName -like "*$domainName*") {
-        Write-Host "Skipping $User.UserPrincipalName due to unknown email address."
+        Write-Host "Skipping $($User.UserPrincipalName) due to unknown email address."
     }
     Else {
         If(Get-ADUser -Identity $User -Properties ProxyAddresses | Select ProxyAddresses | where -Property ProxyAddresses -Like "*$($User.UserPrincipalName)*") {
