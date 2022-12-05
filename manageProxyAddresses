@@ -1,0 +1,19 @@
+$ldapString = ""  # Something like OU=Domain Users,DC=contoso,DC=com
+$domainName = ""
+
+$Users = Get-ADUser -Filter * -SearchBase $ldapString
+
+ForEach($User in $Users) {
+    If($User.UserPrincipalName -like "*$domainName*") {
+        Write-Host "Skipping $User.UserPrincipalName due to unknown email address."
+    }
+    Else {
+        If(Get-ADUser -Identity $User -Properties ProxyAddresses | Select ProxyAddresses | where -Property ProxyAddresses -Like "*$($User.UserPrincipalName)*") {
+            Write-Host "User $User.UserPrincipalName already has a proxy address.. skipping."
+        }
+        Else {
+            Set-ADUser -Identity $User -Add @{proxyAddresses="SMTP:$($User.UserPrincipalName)"}
+            Write-Host "User $User.UserPrincipalName now has proxy address."
+        }
+    }
+}
