@@ -9,11 +9,11 @@ ForEach($User in $Users) {
     }
     Else {
         If(Get-ADUser -Identity $User -Properties ProxyAddresses | Select ProxyAddresses | where -Property ProxyAddresses -Like "*$($User.UserPrincipalName)*") {
-            Write-Host "User $User.UserPrincipalName already has a proxy address.. skipping."
+            Write-Host "User $($User.UserPrincipalName) already has a proxy address.. skipping."
         }
         Else {
             Set-ADUser -Identity $User -Add @{proxyAddresses="SMTP:$($User.UserPrincipalName)"}
-            Write-Host "User $User.UserPrincipalName now has proxy address."
+            Write-Host "User $($User.UserPrincipalName) now has proxy address."
         }
     }
 }
